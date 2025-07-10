@@ -1,4 +1,4 @@
-#include "definiciones_objetos.h"
+#include "include_define_obj.h"
 
 // ############################ Instancia de objetos ##########################
 DHT dht(DHTPIN, DHTTYPE);

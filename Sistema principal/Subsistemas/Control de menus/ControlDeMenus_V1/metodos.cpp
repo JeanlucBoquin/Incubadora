@@ -1,4 +1,4 @@
-#include "definiciones_objetos.h"
+#include "include_define_obj.h"
 #include "configuracion_fsm.h"
 
 long tiempoUltimaLectura = 0;
@@ -22,9 +22,11 @@ void a_in_state(){
   lcd.setCursor(0, 1);
   lcd.print("Tempert: ");
   lcd.print(t);
+  // lcd.write(byte (0));
   lcd.print(" ");
   lcd.write(byte (2));
-  check_button();
+  check_button_next();
+  check_button_previous();
 }
 
 void b_in_state(){
@@ -52,7 +54,8 @@ void b_in_state(){
   lcd.setCursor(0, 1);
   lcd.print("Hora.: ");
   lcd.print(hora);
-  check_button();
+  check_button_next();
+  check_button_previous();
 }
 
 void c_in_state(){
@@ -64,22 +67,42 @@ void c_in_state(){
   lcd.print("Temp inter.: ");
   lcd.print(" ");
   lcd.write(byte (2));
-  check_button();
+  check_button_next();
+  check_button_previous();
 }
 
-void check_button(){
+void check_button_next(){
   static bool flancoAscendente = false;
   
   if(millis() - tiempoUltimaLectura > 120){
-    if( digitalRead(pulsador) == 0 && flancoAscendente == false ){
+    if( digitalRead(BTN_NEXT) == 0 && flancoAscendente == false ){
       if(flancoAscendente == false){
         Serial.println("button_pressed");
-        fsm.trigger(BUTTON_EVENT);
+        fsm.trigger(BUTTON_EVENT_NEXT);
       }
       flancoAscendente = true;
     }
 
-    if(digitalRead(pulsador) == 1 && flancoAscendente == true){
+    if(digitalRead(BTN_NEXT) == 1 && flancoAscendente == true){
+      flancoAscendente = false;
+      tiempoUltimaLectura = millis();
+    }
+  }
+}
+
+void check_button_previous(){
+    static bool flancoAscendente = false;
+  
+  if(millis() - tiempoUltimaLectura > 120){
+    if( digitalRead(BTN_PREVIOUS) == 0 && flancoAscendente == false ){
+      if(flancoAscendente == false){
+        Serial.println("button_pressed");
+        fsm.trigger(BUTTON_EVENT_PREVIOUS);
+      }
+      flancoAscendente = true;
+    }
+
+    if(digitalRead(BTN_PREVIOUS) == 1 && flancoAscendente == true){
       flancoAscendente = false;
       tiempoUltimaLectura = millis();
     }

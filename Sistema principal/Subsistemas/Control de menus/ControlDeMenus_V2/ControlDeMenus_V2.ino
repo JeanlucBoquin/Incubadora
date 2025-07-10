@@ -5,11 +5,13 @@
 
 #define DHTPIN 2      //Pin digital #2 (datos)
 #define DHTTYPE DHT22 //Sensor DHT22
-#define pulsador 3
+#define BTN_NEXT 3
+#define BTN_PREVIOUS 4
 
 // ############################ Definicion de variables #######################
 enum Trigger{
-  BUTTON_EVENT // Equivalente a #define BUTTON_EVENT 1
+    BUTTON_EVENT_NEXT,    // equivalente #define BUTTON_EVENT_NEXT 1
+    BUTTON_EVENT_PREVIOUS // equivalente #define BUTTON_EVENT_PREVIOUS 2
 };
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -56,7 +58,8 @@ void on_state();
 void a_in_state();
 void b_in_state();
 void c_in_state();
-void check_button();
+void check_button_next();
+void check_button_previous();
 
 // ############################ Configuracion de FSM ##########################
 // State state(&func_on_enter_state, &func_in_state, &func_on_exit_state)
@@ -79,9 +82,13 @@ void setup() {
   lcd.createChar(2, termometro);
 
   // fsm.add_transition(&state_to_transition_from, &state_to_transition_to, &trigger, &func_on_transition)
-  fsm.add_transition(&state_a, &state_b, BUTTON_EVENT, nullptr);
-  fsm.add_transition(&state_b, &state_c, BUTTON_EVENT, nullptr);
-  fsm.add_transition(&state_c, &state_a, BUTTON_EVENT, nullptr);
+  fsm.add_transition(&state_a, &state_b, BUTTON_EVENT_NEXT, nullptr);
+  fsm.add_transition(&state_b, &state_c, BUTTON_EVENT_NEXT, nullptr);
+  fsm.add_transition(&state_c, &state_a, BUTTON_EVENT_NEXT, nullptr);
+
+  fsm.add_transition(&state_a, &state_c, BUTTON_EVENT_PREVIOUS, nullptr);
+  fsm.add_transition(&state_b, &state_a, BUTTON_EVENT_PREVIOUS, nullptr);
+  fsm.add_transition(&state_c, &state_b, BUTTON_EVENT_PREVIOUS, nullptr);
 }
 
 void loop() {
@@ -106,7 +113,8 @@ void a_in_state(){
   lcd.print(t);
   lcd.print(" ");
   lcd.write(byte (2));
-  check_button();
+  check_button_next();
+  check_button_previous();
 }
 
 void b_in_state(){
@@ -136,28 +144,49 @@ void b_in_state(){
   lcd.setCursor(0, 1);
   lcd.print("Hora.: ");
   lcd.print(hora);
-  check_button();
+  check_button_next();
+  check_button_previous();
 }
 
 void c_in_state(){
   lcd.print("Hola mundo");
   lcd.setCursor(0, 0);
-  check_button();
+  check_button_next();
+  check_button_previous();
 }
 
-void check_button(){
+void check_button_next(){
   static bool flancoAscendente = false;
-
+  
   if(millis() - tiempoUltimaLectura > 120){
-    if( digitalRead(pulsador) == 0 && flancoAscendente == false ){
+    if( digitalRead(BTN_NEXT) == 0 && flancoAscendente == false ){
       if(flancoAscendente == false){
         Serial.println("button_pressed");
-        fsm.trigger(BUTTON_EVENT);
+        fsm.trigger(BUTTON_EVENT_NEXT);
       }
       flancoAscendente = true;
     }
 
-    if(digitalRead(pulsador) == 1 && flancoAscendente == true){
+    if(digitalRead(BTN_NEXT) == 1 && flancoAscendente == true){
+      flancoAscendente = false;
+      tiempoUltimaLectura = millis();
+    }
+  }
+}
+
+void check_button_previous(){
+    static bool flancoAscendente = false;
+  
+  if(millis() - tiempoUltimaLectura > 120){
+    if( digitalRead(BTN_PREVIOUS) == 0 && flancoAscendente == false ){
+      if(flancoAscendente == false){
+        Serial.println("button_pressed");
+        fsm.trigger(BUTTON_EVENT_PREVIOUS);
+      }
+      flancoAscendente = true;
+    }
+
+    if(digitalRead(BTN_PREVIOUS) == 1 && flancoAscendente == true){
       flancoAscendente = false;
       tiempoUltimaLectura = millis();
     }

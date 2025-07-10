@@ -1,5 +1,5 @@
-#ifndef DEFINICIONES_OBJETOS_H
-#define DEFINICIONES_OBJETOS_H
+#ifndef INCLUDE_DEFINE_OBJ_H
+#define INCLUDE_DEFINE_OBJ_H
 
   #include <Arduino.h>
   #include <DHT.h>
@@ -8,8 +8,13 @@
 
   #define DHTPIN 2      //Pin digital #2 (datos)
   #define DHTTYPE DHT22 //Sensor DHT22
-  #define pulsador 3
-  #define BUTTON_EVENT 1
+  #define BTN_NEXT 3
+  #define BTN_PREVIOUS 4
+
+  enum Triggers {
+    BUTTON_EVENT_NEXT,    // equivalente #define BUTTON_EVENT_NEXT 1
+    BUTTON_EVENT_PREVIOUS // equivalente #define BUTTON_EVENT_PREVIOUS 2
+  };
 
   extern DHT dht;
   extern LiquidCrystal_I2C lcd;
