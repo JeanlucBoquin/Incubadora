@@ -24,7 +24,6 @@ void setup() {
 
   dht.begin();
   rtc.begin();
-  // rtc.adjust(DateTime(2025,8,10,15,10,0));
 
   lcd.init();
   lcd.backlight();
@@ -54,15 +53,18 @@ void setup() {
 }
 
 void loop() {
-    // h = dht.readHumidity();
-    tDHT = dht.readTemperature();
-    // Serial.println(tDHT);
+  static bool banderaClearControlManual = true;
   if(digitalRead(modoAutomatico) == true){
     fsm_subsis_menus.run_machine();
-    // fsm_subsis_mov.run_machine();
+    fsm_subsis_mov.run_machine();
     fsm_subsis_temp.run_machine();
+    banderaClearControlManual = true;
   }
   else{
+    if(banderaClearControlManual == true ) {
+      lcd.clear();
+      banderaClearControlManual = false;
+    }
 
     lcd.setCursor(0, 0);
     lcd.print("Focos: ");
@@ -83,7 +85,10 @@ void loop() {
 
     button_manual_focos();
     button_manual_motor();
+    tiempoSubsistemaControlTemperatura = millis();
   }
-  wdt_reset();
+  if(millis() - tiempoSubsistemaControlTemperatura < 2000 && tBME < 100){
+    wdt_reset();
+  }
 }
 

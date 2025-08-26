@@ -41,6 +41,7 @@
   extern DHT dht;
   
 
+  extern long tiempoSubsistemaControlTemperatura;
   extern long tiempoUltimaLectura;
   extern int contDeGiros;
   extern long tiempooSiguienteRotacion;
@@ -78,6 +79,8 @@
 
   void button_manual_focos();
   void button_manual_motor();
+
+  void obtenerDatosTemperaturaHumedad();
 
 
 

@@ -6,6 +6,7 @@ LiquidCrystal_I2C lcd(0x27,20,4);
 // LiquidCrystal_I2C lcd(0x27,16,2);
 RTC_DS3231 rtc;
 
+long tiempoSubsistemaControlTemperatura = 0;
 long tiempoUltimaLectura = 0;
 int contDeGiros = 0;
 long tiempooSiguienteRotacion = 0;
